@@ -4,7 +4,7 @@ import functions as help
 
 class SQLite:    
     #   Строка соединения с БД
-    __db_url = "c:\\SQLite\\db\\avito.db"    
+    __db_url = "avito.db"    
     #   Объект соединнеия с БД
     __conn = sqlite3.connect(__db_url)    
     #   проверка новое ли объявление или нет
