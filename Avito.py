@@ -1,3 +1,5 @@
+# coding: utf8
+
 import sys
 import functions as help
 from bs4 import BeautifulSoup

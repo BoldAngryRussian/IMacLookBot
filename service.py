@@ -1,3 +1,5 @@
+# coding: utf8
+
 import sys
 import Avito
 import DataBase as db
