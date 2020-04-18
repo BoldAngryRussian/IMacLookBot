@@ -1,14 +1,17 @@
 # coding: utf8
 
 import sys
-import sqlite3
+import psycopg2
 import functions as help
 
-class SQLite:    
-    
-    __db_url = "avito.db"    
-    
-    __conn = sqlite3.connect(__db_url)    
+#   Класс работы с БД Postgres на VDI
+#   IPv4: 194.67.92.75
+#   IPv6: 2A00:F940:2:1:2:0:0:1DEA
+
+class PostgreSqlDB:   
+
+    __conn = psycopg2.connect(  host = "194.67.92.75",  database = "avito",
+                                user = "imacbot",       password = "Postgresql3881730@" )    
     
     def __commit(self):
         self.__conn.commit()
@@ -18,9 +21,9 @@ class SQLite:
 
     def isNewIMacByHash (self, hash):
         try:
-            cursor = self.__conn.cursor()                        
-            if len(list(cursor.execute( 'SELECT * FROM T_IMAC WHERE HASH=?', (hash,)))) == 0:
-                return True
+            cursor = self.__conn.cursor()  
+            cursor.execute( 'SELECT * FROM avito."T_MAC" WHERE "HASH" = %s', (hash,))                        
+            return True if cursor.rowcount == 0 else False
         except Exception as error:
             print("Error during isNewIMac request {0}".format(error) )
         return False
@@ -33,7 +36,7 @@ class SQLite:
     def addNewIMac (self, mac):
         try:
             cursor = self.__conn.cursor()            
-            cursor.execute("INSERT OR IGNORE INTO T_IMAC (TITLE,LINK,HASH) VALUES(?,?,?)",(mac['title'],mac['href'],mac['hash']))
+            cursor.execute('INSERT INTO avito."T_MAC" ("TITLE","LINK","HASH") VALUES(%s,%s,%s)',(mac['title'],mac['href'],mac['hash']))
             self.__commit()
         except Exception as error:
             print ("Error during addNewIMac execution : {0}".format(error))      
@@ -42,7 +45,7 @@ class SQLite:
     def delMacByHash(self, hash):
         try:
             cursor = self.__conn.cursor()
-            rez = cursor.execute("DELETE FROM T_IMAC WHERE HASH=?",(hash,))
+            rez = cursor.execute('DELETE FROM avito."T_MAC" WHERE HASH=%s',(hash,))
             self.__commit()
             return True if rez.rowcount > 0 else False
         except Exception as error:
@@ -54,7 +57,7 @@ class SQLite:
     def delMac(self, title, url):
         try:
             cursor = self.__conn.cursor()
-            rez = cursor.execute("DELETE FROM T_IMAC WHERE TITLE=? AND LINK=?",(title,url))
+            rez = cursor.execute('DELETE FROM avito."T_MAC" WHERE "TITLE"=%s AND "LINK"=%s',(title,url))
             self.__commit()
             return True if rez.rowcount > 0 else False
         except Exception as error:
@@ -66,7 +69,7 @@ class SQLite:
     def delAllMac(self):
         try:
             cursor = self.__conn.cursor()
-            rez = cursor.execute("DELETE FROM T_IMAC")
+            rez = cursor.execute('DELETE FROM avito."T_MAC"')
             self.__commit()
             return True if rez.rowcount > 0 else False
         except Exception as error:
